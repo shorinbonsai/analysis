@@ -1,5 +1,8 @@
 from collections import defaultdict
 import networkx as nx
+import cdlib
+from cdlib import algorithms
+from cdlib import evaluation
 
 import os
 import sys
@@ -66,6 +69,7 @@ def get_edge_list(inp: str):
 
 def main():
     alphas = [0.7, 0.49, 0.343, 0.2401, 0.16807]
+    betas  = [0.3, 0.51, 0.657, 0.7599, 0.83193]
     graph_inp = "256graphbest.dat"
     tmp = get_edge_list(graph_inp)
 
@@ -86,11 +90,24 @@ def main():
         # Add each edge to the new graph with its calculated weight
         H.add_edge(u, v, weight=w)
 
-    inverse = nx.Graph()
-    standard = nx.Graph()
+    inverse = nx.Graph(H)
+    standard = nx.Graph(H)
     for i in H.edges():
-        H[i[0]][i[1]]['weight'] = alphas[H[i[0]][i[1]]['weight']-1]
+        inverse[i[0]][i[1]]['weight'] = alphas[H[i[0]][i[1]]['weight']-1]
+        standard[i[0]][i[1]]['weight'] = betas[H[i[0]][i[1]]['weight']-1]
 
+    # print("cat")
+    # for x in inverse.edges():
+    #     print(inverse[x[0]][x[1]]['weight'])
+    # print(inverse.edges().keys)
+
+    # print("Degree: " + str(nx.degree_centrality(inverse)))
+    # print("Betweenness: " + str(nx.betweenness_centrality(inverse, weight='weight')))
+    # print("Edge Betweenness: " + str(nx.edge_betweenness_centrality(inverse, weight='weight')))
+    louvy = algorithms.louvain(inverse, weight='weight')
+    print(louvy.communities)
+    modulars = evaluation.newman_girvan_modularity(inverse, louvy)
+    print(modulars)
     print("cat")
     pass
 
