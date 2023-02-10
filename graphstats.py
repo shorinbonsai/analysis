@@ -100,15 +100,26 @@ def main():
     # for x in inverse.edges():
     #     print(inverse[x[0]][x[1]]['weight'])
     # print(inverse.edges().keys)
-
-    # print("Degree: " + str(nx.degree_centrality(inverse)))
+    print("Multigraph Degree: " + str(M.degree()))
+    print("Inverse Degree: " + str(inverse.degree()))
+    print("Degree Centrality: " + str(nx.degree_centrality(inverse)))
     # print("Betweenness: " + str(nx.betweenness_centrality(inverse, weight='weight')))
     # print("Edge Betweenness: " + str(nx.edge_betweenness_centrality(inverse, weight='weight')))
     louvy = algorithms.louvain(inverse, weight='weight')
-    print(louvy.communities)
+    print("Louvain Communities: " + str(louvy.communities))
     modulars = evaluation.newman_girvan_modularity(inverse, louvy)
-    print(modulars)
+    print("Modularity: " + str(modulars.score))
+    print("Eccentricity: " + str(nx.eccentricity(inverse)))
+    print("Diameter: " + str(nx.diameter(inverse)))
     print("cat")
+    with open('256aStats.txt', 'w') as f:
+        print("Multigraph Degree: " + str(M.degree()), file=f)
+        print("Inverse Degree: " + str(inverse.degree()), file=f)
+        print("Degree Centrality: " + str(nx.degree_centrality(inverse)), file=f)
+        print("Louvain Communities: " + str(louvy.communities), file=f)
+        print("Modularity: " + str(modulars.score), file=f)
+        print("Eccentricity: " + str(nx.eccentricity(inverse)), file=f)
+        print("Diameter: " + str(nx.diameter(inverse)), file=f)
     pass
 
 if __name__ == "__main__":
