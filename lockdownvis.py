@@ -108,7 +108,7 @@ def make_graph(el: list, ec: list, low_deg: list, high_deg: list, out_file: str,
 
     recovered = []
     for idx, i in enumerate(log):
-        if idx < lock:
+        if idx < lock and idx >= lock - 3:
             for j in log[idx]:
                 recovered.append(j)
 

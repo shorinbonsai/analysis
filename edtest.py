@@ -21,28 +21,6 @@ alpha = 0.3
 shutdown = 3
 
 
-def get_bests(dir_path: str):
-    with open(dir_path, "r",  errors="ignore") as f:
-        best = f.readlines()
-        result = []
-        lockdown = []
-        strictness = []
-        files = []
-        for i in best:
-            i = i.strip()
-            i = i.rstrip(".txt")
-            pathy = i.split("/")
-            pathy2 = pathy[-1][7:]
-            test = i.split("/")
-            test = test[0] + "/" + test[1] + "/" + test[2] + "/"
-            newg = "lockdown_graph" + pathy2 + ".dat"
-            test = test + newg
-            result.append(newg)
-            lockdown.append(pathy[1])
-            strictness.append(pathy[2])
-            files.append(test)
-        return result, lockdown, strictness, files
-
 def infected(sick: int):
     beta = 1 - exp(sick * log(1 - alpha))
     if random.random() < beta:
@@ -63,18 +41,14 @@ def make_adj_listsO(inp: str):
                 for to in line:
                     if to != '':
                         adj_lists[fr].append(int(to))
-                        pass
-                    pass
-                pass
-            pass
 
     return adj_lists
 
 
 def main():
-    # random.seed(2431423)
+    #random.seed(1431423)
     p0 = 0
-    graph_inp = "tested.dat"
+    graph_inp = "graphForJames_new.dat"
     graph_orig = make_adj_listsO(graph_inp)
     node_numb = len(graph_orig)
     
@@ -89,8 +63,20 @@ def main():
         log, score, length = fitness_bare(graph_orig,node_numb, p0)
         data.append(length)
 
-    print(data)
-    print("Avg: " + str(mean(data)))
+    import numpy as np
+    import scipy.stats
+    def mean_confidence_interval(data, confidence=0.95):
+        a = 1.0 * np.array(data)
+        n = len(a)
+        m, se = np.mean(a), scipy.stats.sem(a)
+        h = se * scipy.stats.t.ppf((1 + confidence) / 2., n-1)
+        return m, m-h, m+h
+
+    print(mean_confidence_interval(data))
+
+    with open('testTesttest.txt', 'w') as f:
+        print(data, file=f)
+        print("Avg: " + str(mean(data)), file=f)
 
 
 
@@ -168,19 +154,10 @@ def fitness_bare(adj_lists: list[list[int]], nodes: int, p0):
         for n in range(nodes):
             if n_state[n] == 1:  # infected -> removed
                 n_state[n] = 2
-                pass
             elif n_state[n] == 3:
                 n_state[n] = 1
                 num_infected += 1
                 new_inf.append(n)
-                pass
-            #####ADD SIRRRS HERE  
-            # elif n_state[n] == 2:
-            #     n_state[n] = 4
-            # elif n_state[n] == 4:
-            #     n_state[n] = 5
-            # elif n_state[n] == 5:
-            #     n_state[n] = 0
         epi_log.append(new_inf)
         length += 1
         time_step += 1
@@ -189,3 +166,16 @@ def fitness_bare(adj_lists: list[list[int]], nodes: int, p0):
 
 if __name__ == "__main__":
     main()
+
+
+
+
+
+
+            #####ADD SIRRRS HERE  
+            # elif n_state[n] == 2:
+            #     n_state[n] = 4
+            # elif n_state[n] == 4:
+            #     n_state[n] = 5
+            # elif n_state[n] == 5:
+            #     n_state[n] = 0

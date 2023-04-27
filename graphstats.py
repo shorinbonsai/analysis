@@ -3,6 +3,7 @@ import networkx as nx
 import cdlib
 from cdlib import algorithms
 from cdlib import evaluation
+from collections import OrderedDict
 
 import os
 import sys
@@ -47,10 +48,10 @@ def make_adj_lists_lock(inp: str) -> list[list[int]]:
 def get_edge_list(inp: str):
     with open(inp, "r") as f:
         first_line = f.readline()
-        first_line = first_line.strip('\n')
-        first_line = first_line.split(' ')
-        nodes = int(first_line[0])
-        edges = int(first_line[2])
+        # first_line = first_line.strip('\n')
+        # first_line = first_line.split(' ')
+        # nodes = int(first_line[0])
+        # edges = int(first_line[2])
         edg_list = []
         lines = f.readlines()
         
@@ -70,7 +71,7 @@ def get_edge_list(inp: str):
 def main():
     alphas = [0.7, 0.49, 0.343, 0.2401, 0.16807]
     betas  = [0.3, 0.51, 0.657, 0.7599, 0.83193]
-    graph_inp = "256graphbest.dat"
+    graph_inp = "256graphbest3.dat"
     tmp = get_edge_list(graph_inp)
 
     M = nx.MultiGraph()
@@ -104,21 +105,27 @@ def main():
     print("Inverse Degree: " + str(inverse.degree()))
     print("Degree Centrality: " + str(nx.degree_centrality(inverse)))
     # print("Betweenness: " + str(nx.betweenness_centrality(inverse, weight='weight')))
+    betweenness = nx.betweenness_centrality(inverse, weight='weight')
+    edgebetween = nx.edge_betweenness_centrality(inverse, weight='weight')
     # print("Edge Betweenness: " + str(nx.edge_betweenness_centrality(inverse, weight='weight')))
     louvy = algorithms.louvain(inverse, weight='weight')
     print("Louvain Communities: " + str(louvy.communities))
     modulars = evaluation.newman_girvan_modularity(inverse, louvy)
     print("Modularity: " + str(modulars.score))
-    print("Eccentricity: " + str(nx.eccentricity(inverse)))
-    print("Diameter: " + str(nx.diameter(inverse)))
+    # print("Eccentricity: " + str(nx.eccentricity(inverse)))
+    # print("Diameter: " + str(nx.diameter(inverse)))
     print("cat")
-    with open('256aStats.txt', 'w') as f:
+    with open('256cStats.txt', 'w') as f:
         print("Multigraph Degree: " + str(M.degree()), file=f)
         print("Inverse Degree: " + str(inverse.degree()), file=f)
         print("Degree Centrality: " + str(nx.degree_centrality(inverse)), file=f)
+        print("Betweenness: " + str(betweenness), file=f)
+        print("Edge Betweenness: " + str(edgebetween), file=f)
         print("Louvain Communities: " + str(louvy.communities), file=f)
         print("Modularity: " + str(modulars.score), file=f)
+        # Eccentricity wont work with lockdown graphs cause needs connected graph
         print("Eccentricity: " + str(nx.eccentricity(inverse)), file=f)
+        # Diameter wont work with lockdown graphs cause needs connected graph
         print("Diameter: " + str(nx.diameter(inverse)), file=f)
     pass
 
