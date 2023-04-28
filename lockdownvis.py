@@ -242,7 +242,9 @@ def fitness_reopen(adj_lists: list[list[int]], nodes: int, p0, remove_list: list
     have_locked_down = False
     have_reopened = False
     lockdown_step = 0
-    reopen_step = 128
+    prelock_step = 0
+    reopen_step = 512
+    pre_reopen_step = 512
     length = 0
     while num_infected > 0 and time_step < nodes:
         current_infected = num_infected/nodes
@@ -250,6 +252,7 @@ def fitness_reopen(adj_lists: list[list[int]], nodes: int, p0, remove_list: list
             temp_list = tmp_removed
             have_locked_down = True
             lockdown_step = time_step
+            prelock_step = lockdown_step -1
 
         inf_neighbours = [0 for _ in range(nodes)]
 
@@ -258,6 +261,7 @@ def fitness_reopen(adj_lists: list[list[int]], nodes: int, p0, remove_list: list
         if current_infected < reopen_percent and have_locked_down == True and have_reopened == False:
             temp_list = copy.deepcopy(adj_lists)
             reopen_step = time_step
+            pre_reopen_step = reopen_step - 1
             have_reopened = True
 
         for n in range(nodes):
